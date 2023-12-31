@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending Tracker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 60px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, textarea, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #expenses {
+            margin-top: 20px;
+        }
+        .expense-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .top-nav {
+            background-color: #c0dbf8; /* or any color of your choice */
+            padding: 10px 5px;
+            position: fixed; /* Fixed at the top */
+            top: 0; /* Stick to the top */
+            width: 100%; /* Full width */
+            z-index: 1000; /* Ensure it's above other content */
+            /* display: flex;
+            justify-content: space-around; /* Distribute space between links */
+            /* align-items: center; */
+        }
+
+        .nav-link {
+
+            display: block; /* Make the link take the full available width */
+            text-align: center; /* Center the text inside the link */
+            color: white;
+            text-decoration: none;
+            padding: 10px 0; /* Padding top and bottom */
+            border-radius: 0; /* Optional: Remove border-radius if you want */
+            transition: background-color 0.3s, color 0.3s;
+
+
+            /* color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s; */
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            background-color: #c0e7c0; /* Darker shade for hover effect */
+            color: rgb(185, 148, 148);
+            text-decoration: none;
+        }
+
+        #history-link {
+            background-color: #ebe4d0; /* Highlight the 'View Spending History' button */
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/history" class="nav-link" id="history-link">View Spending History</a>
+        <!-- Add more navigation links as needed -->
+    </nav>
+    <div class="container">
+        <h1>Spending Tracker</h1>
+        <form id="expense-form">
+            <input type="text" id="category" placeholder="Category" required>
+            <input type="number" id="amount" placeholder="Amount" required>
+            <input type="date" id="date" required>
+            <textarea id="description" placeholder="Description"></textarea>
+            <button type="submit">Add Expense</button>
+        </form>
+        <!-- Inside your <body> tag -->
+    <!-- <a href="/history">View Spending History</a> -->
+
+        <div id="expenses">
+            <!-- Expenses will be listed here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript code for handling form submission and updating UI
+        document.getElementById('expense-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const category = document.getElementById('category').value;
+            const amount = document.getElementById('amount').value;
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+
+
+            fetch('/add-expense', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ category, amount, date, description }),
+            })
+
+
+            // Add code to submit these values to your backend
+            // And then update the UI with the new expense
+
+            // Example: Append new expense to the expenses div
+            const expensesDiv = document.getElementById('expenses');
+            const newExpenseDiv = document.createElement('div');
+            newExpenseDiv.classList.add('expense-item');
+            newExpenseDiv.innerHTML = `<strong>${category}:</strong> $${amount} - <em>${date}</em><p>${description}</p>`;
+            expensesDiv.appendChild(newExpenseDiv);
+
+            // Reset form after submission
+            document.getElementById('expense-form').reset();
+        });
+    </script>
+</body>
+</html>

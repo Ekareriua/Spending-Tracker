@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending History</title>
+    <style>
+        /* Similar styling as your index.html */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .expense-item {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #home-button {
+        margin-bottom: 20px; /* Spacing below the button */
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/">
+            <button id="home-button">Home</button>
+        </a>
+        <h1>Spending History</h1>
+        <div id="expense-history">
+            <!-- Spending history will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            fetch('/expenses')
+                .then(response => response.json())
+                .then(data => {
+                    const historyContainer = document.getElementById('expense-history');
+                    data.forEach(expense => {
+                        const expenseDiv = document.createElement('div');
+                        expenseDiv.classList.add('expense-item');
+                        expenseDiv.innerHTML = `
+                            <p><strong>Date:</strong> ${expense.formatted_date}</p>
+                            <p><strong>Category:</strong> ${expense.category}</p>
+                            <p><strong>Amount:</strong> $${expense.amount}</p>
+                            <p><strong>Description:</strong> ${expense.description}</p>
+                        `;
+                        historyContainer.appendChild(expenseDiv);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        };
+    </script>
+</body>
+</html>
