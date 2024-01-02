@@ -16,88 +16,115 @@
             height: 100vh;
             padding-top: 60px;
         }
+
         .container {
             background-color: white;
             padding: 20px;
+            padding-top: 60px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
             max-width: 500px;
         }
+
         h1 {
             color: #333;
             text-align: center;
         }
+
         form {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         input, textarea, button {
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ddd;
             font-size: 16px;
         }
+
         button {
-            background-color: #007bff;
+            background-color: #007924;
             color: white;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color: #08812cc7;
         }
+
         #expenses {
             margin-top: 20px;
         }
+
         .expense-item {
             background-color: #e9ecef;
             padding: 10px;
             border-radius: 4px;
             margin-bottom: 10px;
         }
-        .top-nav {
-            background-color: #c0dbf8; /* or any color of your choice */
-            padding: 10px 5px;
-            position: fixed; /* Fixed at the top */
-            top: 0; /* Stick to the top */
-            width: 100%; /* Full width */
-            z-index: 1000; /* Ensure it's above other content */
-            /* display: flex;
-            justify-content: space-around; /* Distribute space between links */
-            /* align-items: center; */
-        }
+
+
+        
 
         .nav-link {
-
-            display: block; /* Make the link take the full available width */
-            text-align: center; /* Center the text inside the link */
-            color: white;
-            text-decoration: none;
-            padding: 10px 0; /* Padding top and bottom */
-            border-radius: 0; /* Optional: Remove border-radius if you want */
-            transition: background-color 0.3s, color 0.3s;
-
-
-            /* color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s; */
+            text-decoration: none; /* Remove underlines from links */
+            color: white; /* Set the text color to white */
+            padding: 10px; /* Add some padding around the text */
+            /* Add other styles such as hover effects if desired */
         }
 
+        /* Additional styles here */
+
+
         .nav-link:hover, .nav-link:focus {
-            background-color: #c0e7c0; /* Darker shade for hover effect */
-            color: rgb(185, 148, 148);
+            color: rgb(0, 0, 0);
             text-decoration: none;
         }
 
         #history-link {
-            background-color: #ebe4d0; /* Highlight the 'View Spending History' button */
-            color: #000;
+            color: rgb(255, 255, 255);
+            border-radius: 8px;
         }
+
+        #history-link:hover {
+            color: rgb(8, 8, 8);
+        }
+
+
+
+        /* Style for the navigation bar */
+        .top-nav {
+            background-color: #007924; /* Use a color that matches your design */
+            display: flex;
+            justify-content: flex-start; /* Align items to the start of the nav bar */
+            padding: 10px 20px; /* Add some padding inside the nav bar */
+            position: fixed; /* Fix the navbar to the top of the page */
+            width: 100%; /* Ensure the nav bar spans the full width */
+            top: 0; /* Align the nav bar at the top */
+            left: 0; /* Align the nav bar to the left */
+            z-index: 10; /* Ensure the navbar is above other content */
+        }
+
+        /* Style for the navigation items */
+        .nav-item {
+            display: inline-block; /* Display nav items inline */
+            margin-right: 20px; /* Add some space between nav items */
+            color: white; /* Set text color */
+            text-decoration: none; /* Remove underline from links */
+            padding: 10px; /* Add some padding for clickable area */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .nav-item:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+
     </style>
 </head>
 <body>
@@ -109,7 +136,16 @@
     <div class="container">
         <h1>Spending Tracker</h1>
         <form id="expense-form">
-            <input type="text" id="category" placeholder="Category" required>
+            <!-- Assuming this is within your form element -->
+<div>
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+        <option value="">Select a category</option>
+        <!-- Category options will be populated here -->
+    </select>
+    <button type="button" id="add-category-btn">+</button>
+</div>
+
             <input type="number" id="amount" placeholder="Amount" required>
             <input type="date" id="date" required>
             <textarea id="description" placeholder="Description"></textarea>
@@ -124,6 +160,47 @@
     </div>
 
     <script>
+
+        document.getElementById('add-category-btn').addEventListener('click', function() {
+            const newCategory = prompt('Please enter the new category name:');
+            if (newCategory) {
+                // Code to send the new category to the server
+                fetch('/add-category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ category: newCategory }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        // If successful, add the new category to the dropdown
+                        const categoryDropdown = document.getElementById('category');
+                        const option = new Option(newCategory, newCategory);
+                        categoryDropdown.add(option);
+                    } else {
+                        alert('Error adding category');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+
+        // After your page loads
+        fetch('/categories')
+            .then(response => response.json())
+            .then(categories => {
+                const categoryDropdown = document.getElementById('category');
+                categories.forEach(category => {
+                    const option = new Option(category.name, category.id);
+                    categoryDropdown.add(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+
         // JavaScript code for handling form submission and updating UI
         document.getElementById('expense-form').addEventListener('submit', function(e) {
             e.preventDefault();
